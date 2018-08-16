@@ -1,7 +1,17 @@
-Python impl for TextRank
-========================
+Python Implementation for TextRank
+==================================
 
-Python implementation of *TextRank*, based on the 
+This repository is based on [pytextrank](https://github.com/ceteri/pytextrank). Refer to original repository for more information.
+
+Modifications:
+1. Removed unused argument `Parse=True` which causes error with spaCy `spacy_nlp` function. Refer to [laxatives' Pull Request](https://github.com/ceteri/pytextrank/pull/11).
+2. Modified functions to avoid writing intermediate results to
+3. Added function `top_keywords_sentences` which return the top keywords and sentences to for easy use
+
+Differences vs the initial Mihalcea paper
+-----------------------------------------
+
+Python implementation of *TextRank*, based on the
 `Mihalcea 2004 <http://web.eecs.umich.edu/~mihalcea/papers/mihalcea.emnlp04.pdf>`_
 paper.
 
@@ -26,7 +36,10 @@ talk on *text summarization*.
 Example Usage
 -------------
 
-See `PyTextRank wiki <https://github.com/ceteri/pytextrank/wiki/Examples>`_
+```python
+import xang1234_pytextrank as pyt
+keywords, sentence= pyt.top_keywords_sentences(path, phrase_limit=15, sent_word_limit=150)
+```
 
 
 Dependencies and Installation
@@ -39,56 +52,7 @@ This code has dependencies on several other Python projects:
 -  `datasketch <https://github.com/ekzhu/datasketch>`_
 -  `graphviz <https://pypi.python.org/pypi/graphviz>`_
 
-To install from `PyPi <https://pypi.python.org/pypi/pytextrank>`_:
-
-::
-
-    pip install pytextrank
-
-
-To install from this Git repo:
-
-::
-
-    pip install -r requirements.txt
-
-After installation you need to download a language model:
-
-::
-
-    python -m spacy download en
 
 Also, the runtime depends on a local file called ``stop.txt`` which
 contains a list of *stopwords*. You can override this in the
 `normalize_key_phrases()` call.
-
-License
--------
-*PyTextRank* has an `Apache 2.0 <https://github.com/ceteri/pytextrank/blob/master/LICENSE>`_ 
-license, so you can use it for commercial applications.
-Please let us know if you find this useful, and tell us about use cases, 
-what else you'd like to see integrated, etc.
-
-Here's a Bibtex entry if you ever need to cite *PyTextRank* in a research paper:
-
-::
-
-    @Misc{PyTextRank,
-    author =   {Nathan, Paco},
-    title =    {PyTextRank, a Python implementation of TextRank for text document NLP parsing and summarization},
-    howpublished = {\url{https://github.com/ceteri/pytextrank/}},
-    year = {2016}
-    }
-
-Kudos
------
-
-`@htmartin <https://github.com/htmartin>`_
-`@williamsmj <https://github.com/williamsmj/>`_
-`@eugenep <https://github.com/eugenep/>`_
-`@mattkohl <https://github.com/mattkohl>`_
-`@vanita5 <https://github.com/vanita5>`_
-`@HarshGrandeur <https://github.com/HarshGrandeur>`_
-`@mnowotka <https://github.com/mnowotka>`_
-`@kjam <https://github.com/kjam>`_
-`@dvsrepo <https://github.com/dvsrepo>`_

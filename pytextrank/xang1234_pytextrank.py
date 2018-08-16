@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Aug 15 21:38:13 2018
+
+@author: david
+"""
+
 #!/usr/bin/env python
 # encoding: utf-8
 
@@ -190,7 +197,7 @@ def parse_graf (doc_id, graf_text, base_idx, spacy_nlp=None):
 
     markup = []
     new_base_idx = base_idx
-    doc = spacy_nlp(graf_text, parse=True)
+    doc = spacy_nlp(graf_text)
 
     for span in doc.sents:
         graf = []
@@ -305,7 +312,7 @@ def build_graph (json_iter):
                     graph.add_node(word_id)
 
             try:
-                graph.edge[pair[0]][pair[1]]["weight"] += 1.0
+                graph.edges[pair[0],pair[1]]["weight"] += 1.0
             except KeyError:
                 graph.add_edge(pair[0], pair[1], weight=1.0)
 
@@ -342,11 +349,11 @@ def render_ranks (graph, ranks, dot_file="graph.dot"):
     #plt.show()
 
 
-def text_rank (path):
+def text_rank (json_iter):
     """
     run the TextRank algorithm
     """
-    graph = build_graph(json_iter(path))
+    graph = build_graph(json_iter)
     ranks = nx.pagerank(graph)
 
     return graph, ranks
@@ -418,7 +425,7 @@ def enumerate_chunks (phrase, spacy_nlp):
     if (len(phrase) > 1):
         found = False
         text = " ".join([rl.text for rl in phrase])
-        doc = spacy_nlp(text.strip(), parse=True)
+        doc = spacy_nlp(text.strip())
 
         for np in doc.noun_chunks:
             if np.text != text:
@@ -536,7 +543,7 @@ def calc_rms (values):
     return max(values)
 
 
-def normalize_key_phrases (path, ranks, stopwords=None, spacy_nlp=None, skip_ner=True):
+def normalize_key_phrases (json_iter, ranks, stopwords=None, spacy_nlp=None, skip_ner=True):
     """
     collect keyphrases, named entities, etc., while removing stop words
     """
@@ -563,10 +570,9 @@ def normalize_key_phrases (path, ranks, stopwords=None, spacy_nlp=None, skip_ner
     single_lex = {}
     phrase_lex = {}
 
-    if isinstance(path, str):
-        path = json_iter(path)
 
-    for meta in path:
+
+    for meta in json_iter:
         sent = [w for w in map(WordNode._make, meta["graf"])]
 
         for rl in collect_keyword(sent, ranks, stopwords):
@@ -654,16 +660,15 @@ def mh_digest (data):
     return m
 
 
-def rank_kernel (path):
+def rank_kernel (json_iter):
     """
     return a list (matrix-ish) of the key phrases and their ranks
     """
     kernel = []
 
-    if isinstance(path, str):
-        path = json_iter(path)
 
-    for meta in path:
+
+    for meta in json_iter:
         if not isinstance(meta, RankedLexeme):
             rl = RankedLexeme(**meta)
         else:
@@ -675,17 +680,15 @@ def rank_kernel (path):
     return kernel
 
 
-def top_sentences (kernel, path):
+def top_sentences (kernel, json_iter):
     """
     determine distance for each sentence
     """
     key_sent = {}
     i = 0
 
-    if isinstance(path, str):
-        path = json_iter(path)
 
-    for meta in path:
+    for meta in json_iter:
         graf = meta["graf"]
         tagged_sent = [WordNode._make(x) for x in graf]
         text = " ".join([w.raw for w in tagged_sent])
@@ -702,20 +705,18 @@ def top_sentences (kernel, path):
 ######################################################################
 ## document summarization
 
-def limit_keyphrases (path, phrase_limit=20):
+def limit_keyphrases (json_iter, phrase_limit=2):
     """
     iterator for the most significant key phrases
     """
     rank_thresh = None
 
-    if isinstance(path, str):
-        lex = []
+    lex = []
 
-        for meta in json_iter(path):
-            rl = RankedLexeme(**meta)
-            lex.append(rl)
-    else:
-        lex = path
+    for meta in json_iter:
+        rl = RankedLexeme(**meta)
+        lex.append(rl)
+
 
     if len(lex) > 0:
         rank_thresh = statistics.mean([rl.rank for rl in lex])
@@ -733,16 +734,15 @@ def limit_keyphrases (path, phrase_limit=20):
             yield rl.text.replace(" - ", "-")
 
 
-def limit_sentences (path, word_limit=100):
+def limit_sentences (json_iter, word_limit=100):
     """
     iterator for the most significant sentences, up to a specified limit
     """
     word_count = 0
 
-    if isinstance(path, str):
-        path = json_iter(path)
 
-    for meta in path:
+
+    for meta in json_iter:
         if not isinstance(meta, SummarySent):
             p = SummarySent(**meta)
         else:
@@ -775,6 +775,33 @@ def make_sentence (sent_text):
         idx += 1
 
     return "".join(lex)
+
+def top_keywords_sentences(path,stopwords=None, spacy_nlp=None, skip_ner=True, phrase_limit=15, sent_word_limit=150):
+    #Parse incoming text
+    parse=parse_doc(json_iter(path))
+    parse_list=[json.loads(pretty_print(i._asdict())) for i in parse]
+
+    #Create and rank graph for keywords
+    graph, ranks = text_rank(parse_list)
+    norm_rank=normalize_key_phrases(parse_list, ranks, stopwords=stopwords, spacy_nlp=spacy_nlp, skip_ner=skip_ner)
+    norm_rank_list=[json.loads(pretty_print(rl._asdict())) for rl in norm_rank ]
+    phrases = ", ".join(set([p for p in limit_keyphrases(norm_rank_list, phrase_limit=phrase_limit)]))
+
+    # return a matrix like result for the top keywords
+    kernel = rank_kernel(norm_rank_list)
+
+    # Rank the sentences
+    top_sent=top_sentences(kernel, parse_list)
+    top_sent_list=[json.loads(pretty_print(s._asdict())) for s in top_sent ]
+    sent_iter = sorted(limit_sentences(top_sent_list, word_limit=sent_word_limit), key=lambda x: x[1])
+
+    s=[]
+    for sent_text, idx in sent_iter:
+        s.append(make_sentence(sent_text))
+
+    graf_text = " ".join(s)
+
+    return(graf_text,phrases)
 
 
 ######################################################################
