@@ -4,8 +4,9 @@ Python Implementation for TextRank
 This repository is based on [pytextrank](https://github.com/ceteri/pytextrank). Refer to original repository for more information.
 
 Modifications:
+
 -  Removed unused argument `Parse=True` which causes error with spaCy `spacy_nlp` function. Refer to [laxatives' Pull Request](https://github.com/ceteri/pytextrank/pull/11).
--  Modified functions to avoid writing intermediate results to
+-  Modified functions to avoid writing intermediate results to json files
 -  Added function `top_keywords_sentences` which return the top keywords and sentences to for easy use
 
 Differences vs the initial Mihalcea paper
