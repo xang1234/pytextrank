@@ -1,4 +1,4 @@
-##Python Implementation for TextRank
+## Python Implementation for TextRank
 
 This repository is based on [pytextrank](https://github.com/ceteri/pytextrank). Refer to original repository for more information.
 
@@ -8,7 +8,7 @@ Modifications:
 -  Modified functions to avoid writing intermediate results to json files
 -  Added function `top_keywords_sentences` which return the top keywords and sentences to for easy use
 
-##Differences vs the initial Mihalcea paper
+## Differences vs the initial Mihalcea paper
 Python implementation of *TextRank*, based on the
 `Mihalcea 2004 <http://web.eecs.umich.edu/~mihalcea/papers/mihalcea.emnlp04.pdf>`_
 paper.
