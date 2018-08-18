@@ -1,5 +1,4 @@
-Python Implementation for TextRank
-==================================
+##Python Implementation for TextRank
 
 This repository is based on [pytextrank](https://github.com/ceteri/pytextrank). Refer to original repository for more information.
 
@@ -9,9 +8,7 @@ Modifications:
 -  Modified functions to avoid writing intermediate results to json files
 -  Added function `top_keywords_sentences` which return the top keywords and sentences to for easy use
 
-Differences vs the initial Mihalcea paper
------------------------------------------
-
+##Differences vs the initial Mihalcea paper
 Python implementation of *TextRank*, based on the
 `Mihalcea 2004 <http://web.eecs.umich.edu/~mihalcea/papers/mihalcea.emnlp04.pdf>`_
 paper.
@@ -34,17 +31,17 @@ Inspired by `Williams 2016 <http://mike.place/2016/summarization/>`_
 talk on *text summarization*.
 
 
-Example Usage
--------------
+## Example Usage
 
 ```python
 import xang1234_pytextrank as pyt
-keywords, sentence= pyt.top_keywords_sentences(path, phrase_limit=15, sent_word_limit=150)
+
+text='This is a test senctence for pytextrank'
+sentence, keywords= pyt.top_keywords_sentences(text, phrase_limit=15, sent_word_limit=150)
 ```
+For more details of usage, refer to [this post](https://xang1234.github.io/textrank/)
 
-
-Dependencies and Installation
------------------------------
+## Dependencies and Installation
 
 This code has dependencies on several other Python projects:
 
