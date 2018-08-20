@@ -252,6 +252,15 @@ def parse_graf (doc_id, graf_text, base_idx, spacy_nlp=None):
     return markup, new_base_idx
 
 
+def text2json(text):
+    """
+    convert text to json for pytextrank methods
+    """
+    #out=json.loads('{"id":"777","text":'+text+'}')
+    out={"id":"777","text":text}
+    yield(out)
+
+
 def parse_doc (json_iter):
     """
     parse one document to prep for TextRank
@@ -776,9 +785,9 @@ def make_sentence (sent_text):
 
     return "".join(lex)
 
-def top_keywords_sentences(path,stopwords=None, spacy_nlp=None, skip_ner=True, phrase_limit=15, sent_word_limit=150):
+def top_keywords_sentences(text,stopwords=None, spacy_nlp=None, skip_ner=True, phrase_limit=15, sent_word_limit=150):
     #Parse incoming text
-    parse=parse_doc(json_iter(path))
+    parse=parse_doc(text2json(text))
     parse_list=[json.loads(pretty_print(i._asdict())) for i in parse]
 
     #Create and rank graph for keywords
@@ -795,6 +804,7 @@ def top_keywords_sentences(path,stopwords=None, spacy_nlp=None, skip_ner=True, p
     top_sent_list=[json.loads(pretty_print(s._asdict())) for s in top_sent ]
     sent_iter = sorted(limit_sentences(top_sent_list, word_limit=sent_word_limit), key=lambda x: x[1])
 
+    # Return ranked sentences
     s=[]
     for sent_text, idx in sent_iter:
         s.append(make_sentence(sent_text))
