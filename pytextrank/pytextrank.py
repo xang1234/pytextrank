@@ -321,7 +321,7 @@ def build_graph (json_iter):
                     graph.add_node(word_id)
 
             try:
-                graph.edges[pair[0],pair[1]]["weight"] += 1.0
+                graph.edge[pair[0],pair[1]]["weight"] += 1.0
             except KeyError:
                 graph.add_edge(pair[0], pair[1], weight=1.0)
 
@@ -789,7 +789,7 @@ def top_keywords_sentences(text,stopwords=None, spacy_nlp=None, skip_ner=True, p
     #Parse incoming text
     parse=parse_doc(text2json(text))
     parse_list=[json.loads(pretty_print(i._asdict())) for i in parse]
-
+         
     #Create and rank graph for keywords
     graph, ranks = text_rank(parse_list)
     norm_rank=normalize_key_phrases(parse_list, ranks, stopwords=stopwords, spacy_nlp=spacy_nlp, skip_ner=skip_ner)
