@@ -191,7 +191,7 @@ def parse_graf (doc_id, graf_text, base_idx, spacy_nlp=None):
     # set up the spaCy NLP parser
     if not spacy_nlp:
         if not SPACY_NLP:
-            SPACY_NLP = spacy.load("en")
+            SPACY_NLP = spacy.load("en_core_web_sm")
 
         spacy_nlp = SPACY_NLP
 
@@ -261,7 +261,7 @@ def text2json(text):
     yield(out)
 
 
-def parse_doc (json_iter):
+def parse_doc (json_iter, spacy_nlp=None):
     """
     parse one document to prep for TextRank
     """
@@ -274,7 +274,7 @@ def parse_doc (json_iter):
             if DEBUG:
                 print("graf_text:", graf_text)
 
-            grafs, new_base_idx = parse_graf(meta["id"], graf_text, base_idx)
+            grafs, new_base_idx = parse_graf(meta["id"], graf_text, base_idx, spacy_nlp=spacy_nlp)
             base_idx = new_base_idx
 
             for graf in grafs:
@@ -571,7 +571,7 @@ def normalize_key_phrases (json_iter, ranks, stopwords=None, spacy_nlp=None, ski
     # set up the spaCy NLP parser
     if not spacy_nlp:
         if not SPACY_NLP:
-            SPACY_NLP = spacy.load("en")
+            SPACY_NLP = spacy.load("en_core_web_sm")
 
         spacy_nlp = SPACY_NLP
 
@@ -787,7 +787,7 @@ def make_sentence (sent_text):
 
 def top_keywords_sentences(text,stopwords=None, spacy_nlp=None, skip_ner=True, phrase_limit=15, sent_word_limit=150):
     #Parse incoming text
-    parse=parse_doc(text2json(text))
+    parse=parse_doc(text2json(text), spacy_nlp=spacy_nlp)
     parse_list=[json.loads(pretty_print(i._asdict())) for i in parse]
 
     #Create and rank graph for keywords
