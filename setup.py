@@ -5,8 +5,8 @@ def readme():
         return f.read()
 
 setup(name='pytextrank',
-      version='1.0.0',
-      description='Python implimentation of TextRank for text document NLP parsing and summarization',
+      version='1.1.0',
+      description='Python implimentation of TextRank for text document NLP parsing and summarization.',
       long_description=readme(),
       classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -25,7 +25,7 @@ setup(name='pytextrank',
         'Topic :: Text Processing :: Linguistic',
       ],
       keywords='textrank, parsing, automatic summarization, natural language processing, nlp, text analytics',
-      url='http://github.com/ceteri/pytextrank',
+      url='https://github.com/nocluebutalotofit/pytextrank/',
       author='Paco Nathan',
       author_email='ceteri@gmail.com',
       license='Apache License 2.0',
